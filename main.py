@@ -29,7 +29,18 @@ def index():
 
 @app.route('/watch/<path:video_file>')
 def watch(video_file):
-    return render_template('watch.html', filename=video_file)
+
+    file_directory, file_name = os.path.split(video_file)
+    files = os.listdir(os.path.join(root_dir, file_directory))
+    files = [f for f in files if os.path.isfile(os.path.join(root_dir, file_directory, f))]
+    video_file_index = files.index(file_name)
+    previous_file = files[video_file_index - 1] if video_file_index >= 1 else None
+    next_file = files[video_file_index + 1] if video_file_index < len(files) - 1 else None
+
+    return render_template('watch.html', filename=video_file,
+                           previous_file=previous_file,
+                           next_file=next_file,
+                           directory=file_directory)
 
 
 if __name__ == '__main__':

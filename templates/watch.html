@@ -18,5 +18,18 @@
 
         Your browser does not support the video tag
     </video>
+    <ul>
+
+        {% if next_file %}
+        <li>
+            <a href="{{ url_for('watch', video_file=directory + '/' + next_file) }}"> next episode ({{ next_file }}) </a>
+        </li>
+        {% endif %}
+        {% if previous_file %}
+        <li>
+            <a href="{{ url_for('watch', video_file=directory + '/' + previous_file) }}"> previous episode ({{ previous_file }})</a>
+        </li>
+        {% endif %}
+    </ul>
 </body>
 </html>
