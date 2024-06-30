@@ -32,6 +32,7 @@ def watch(video_file):
 
     file_directory, file_name = os.path.split(video_file)
     files = os.listdir(os.path.join(root_dir, file_directory))
+    files = sorted(files)
     files = [f for f in files if os.path.isfile(os.path.join(root_dir, file_directory, f))]
     video_file_index = files.index(file_name)
     previous_file = files[video_file_index - 1] if video_file_index >= 1 else None
