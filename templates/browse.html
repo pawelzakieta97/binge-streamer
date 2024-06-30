@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+    <h2>{{ path }}</h2>
+    {% if parent %}
+    <a href="{{ parent }}"> .. </a>
+    {% endif %}
+    {% for dir in directories: %}
+    <ul>
+        <li>
+            <a href="{{ path }}/{{ dir }}"> {{ dir }} </a>
+        </li>
+    </ul>
+    {% endfor %}
+    {% for file in files: %}
+    <ul>
+        <li>
+            <a href="{{ url_for('watch', video_file=path + '/' + file) }}"> {{ file }} </a>
+        </li>
+    </ul>
+    {% endfor %}
+</body>
+</html>
