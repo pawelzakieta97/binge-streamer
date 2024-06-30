@@ -11,6 +11,7 @@ def browse(path):
     if not parent:
         parent = '.'
     elements = os.listdir(os.path.join(root_dir, path))
+    elements = sorted(elements)
     files = [e for e in elements if os.path.isfile(os.path.join(root_dir, path, e))]
     directories = [e for e in elements if e not in files]
     return render_template('browse.html', path=path, files=files, parent=parent,

@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
+<!--    <link rel="stylesheet" href='/static/main.css' />-->
+<!--    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />-->
     <title>Title</title>
 </head>
 <body>
-    <h2>serving video from flask</h2>
+    <h2> {{ filename }} </h2>
     <video width="640" height="480" controls>
         <source src="{{ url_for('static', filename=filename) }}" type="video/mp4">
-<!--        <source src="static/{{ filename }}" type="video/mp4">-->
+
+        <track label="English" kind="subtitles" srclang="en" src="{{ url_for('static', filename='sub.vtt') }}" default>
+
+<!--        <track label="English" kind="subtitles" srclang="en" src="/static/sub.vtt" default>-->
+
         Your browser does not support the video tag
     </video>
 </body>
