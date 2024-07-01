@@ -9,7 +9,7 @@
 </head>
 <body>
     <h2> {{ filename }} </h2>
-    <video width="640" height="480" controls>
+    <video width="640" height="480" controls autoplay id="player">
         <source src="{{ url_for('static', filename=filename) }}" type="video/mp4">
 
         <track label="English" kind="subtitles" srclang="en" src="{{ url_for('static', filename='sub.vtt') }}" default>
@@ -18,6 +18,14 @@
 
         Your browser does not support the video tag
     </video>
+
+    <script type='text/javascript'>
+        document.getElementById('player').addEventListener('ended',myHandler,false);
+        function myHandler(e) {
+            // What you want to do after the event
+            window.location.replace("{{ url_for('watch', video_file=directory + '/' + next_file) }}");
+        }
+    </script>
     <ul>
 
         {% if next_file %}
