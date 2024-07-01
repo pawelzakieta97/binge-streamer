@@ -22,5 +22,9 @@
         </li>
     </ul>
     {% endfor %}
+    {% if last_watched %}
+    <h2>LAST WATCHED</h2>
+    <a href="{{ url_for('watch', video_file=last_watched) }}"> {{ last_watched }} </a>
+    {% endif %}
 </body>
 </html>

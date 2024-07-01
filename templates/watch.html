@@ -9,6 +9,9 @@
 </head>
 <body>
     <h2> {{ filename }} </h2>
+    <p>
+    <a href="{{ url_for('browse', path=directory) }}"> .. </a>
+    </p>
     <video width="640" height="480" controls autoplay id="player">
         <source src="{{ url_for('static', filename=filename) }}" type="video/mp4">
 
@@ -19,6 +22,7 @@
         Your browser does not support the video tag
     </video>
 
+    {% if next_file %}
     <script type='text/javascript'>
         document.getElementById('player').addEventListener('ended',myHandler,false);
         function myHandler(e) {
@@ -26,6 +30,7 @@
             window.location.replace("{{ url_for('watch', video_file=directory + '/' + next_file) }}");
         }
     </script>
+    {% endif %}
     <ul>
 
         {% if next_file %}
