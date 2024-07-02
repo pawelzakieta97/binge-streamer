@@ -27,6 +27,7 @@
         document.getElementById('player').addEventListener('ended',myHandler,false);
         function myHandler(e) {
             // What you want to do after the event
+            let is_fullscreen = (document.fullscreenElement != null)
             window.location.replace("{{ url_for('watch', video_file=directory + '/' + next_file) }}");
         }
     </script>

@@ -2,28 +2,31 @@
 <html>
 <head>
     <title>Title</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-    <h2>{{ path }}</h2>
+    <h2>{{ path if path!='.' else '/' }}</h2>
     {% if parent %}
-    <a href="{{ parent }}"> .. </a>
+    <a href="{{ url_for('browse', path=parent) }}"> .. </a>
     {% endif %}
     {% for dir in directories: %}
     <ul>
         <li>
-            <a href="{{ path }}/{{ dir }}"> {{ dir }} </a>
+            <i class="fa fa-folder"></i>
+            <a href="{{ url_for('browse', path=path + '/' + dir) }}"> {{ dir }} </a>
         </li>
     </ul>
     {% endfor %}
     {% for file in files: %}
     <ul>
         <li>
+            <i class="{{ 'fa fa-file-video-o' if file.endswith('.mp4') else 'fa fa-file' }}"></i>
             <a href="{{ url_for('watch', video_file=path + '/' + file) }}"> {{ file }} </a>
         </li>
     </ul>
     {% endfor %}
     {% if last_watched %}
-    <h2>LAST WATCHED</h2>
+    <h2>continue watching</h2>
     <a href="{{ url_for('watch', video_file=last_watched) }}"> {{ last_watched }} </a>
     {% endif %}
 </body>

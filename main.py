@@ -6,8 +6,9 @@ app = Flask('name', static_folder='static', template_folder='templates')
 root_dir = 'static'
 LAST_WATCHED_FILENAME = 'last_watched.txt'
 
+@app.route('/browse/')
 @app.route('/browse/<path:path>')
-def browse(path):
+def browse(path='.'):
     parent = os.path.split(path)[0]
     if not parent:
         parent = '.'
@@ -15,11 +16,17 @@ def browse(path):
     elements = sorted(elements)
     files = [e for e in elements if os.path.isfile(os.path.join(root_dir, path, e))]
     directories = [e for e in elements if e not in files]
+
+    last_watched = None
+    if os.path.exists(LAST_WATCHED_FILENAME):
+        with open(LAST_WATCHED_FILENAME) as f:
+            last_watched = f.read()
+
     return render_template('browse.html', path=path, files=files, parent=parent,
-                           directories=directories)
+                           directories=directories, last_watched=last_watched)
 
 
-@app.route('/browse/')
+@app.route('/browseee/')
 def index():
     path = root_dir
     elements = os.listdir(path)
