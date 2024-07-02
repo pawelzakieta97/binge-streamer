@@ -15,7 +15,7 @@
     <video width="640" height="480" controls autoplay id="player">
         <source src="{{ url_for('static', filename=filename) }}" type="video/mp4">
 
-        <track label="English" kind="subtitles" srclang="en" src="{{ url_for('static', filename='sub.vtt') }}" default>
+<!--        <track label="English" kind="subtitles" srclang="en" src="{{ url_for('static', filename='sub.vtt') }}" default>-->
 
 <!--        <track label="English" kind="subtitles" srclang="en" src="/static/sub.vtt" default>-->
 
@@ -24,11 +24,25 @@
 
     {% if next_file %}
     <script type='text/javascript'>
-        document.getElementById('player').addEventListener('ended',myHandler,false);
-        function myHandler(e) {
+        document.getElementById('player').addEventListener('ended',onVideoEnd,false);
+        document.getElementById('player').addEventListener('loadeddata',onVideoStart,false);
+        function onVideoEnd(e) {
             // What you want to do after the event
-            let is_fullscreen = (document.fullscreenElement != null)
-            window.location.replace("{{ url_for('watch', video_file=directory + '/' + next_file) }}");
+            var is_fullscreen;
+            if (document.fullscreenElement != null) {
+                is_fullscreen = 'True'
+            } else {
+                is_fullscreen = 'False'
+            }
+            window.location.replace("{{ url_for('watch', video_file=directory + '/' + next_file) }}?fullscreen=" + is_fullscreen);
+        }
+        function onVideoStart(e) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const is_fullscreen = urlParams.get('fullscreen');
+            // window.alert(is_fullscreen)
+            if (is_fullscreen){
+                document.getElementById('player').requestFullscreen();
+            }
         }
     </script>
     {% endif %}

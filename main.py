@@ -1,4 +1,5 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
+
 import os
 
 app = Flask('name', static_folder='static', template_folder='templates')
@@ -26,27 +27,13 @@ def browse(path='.'):
                            directories=directories, last_watched=last_watched)
 
 
-@app.route('/browseee/')
-def index():
-    path = root_dir
-    elements = os.listdir(path)
-    files = [e for e in elements if os.path.isfile(os.path.join(path, e))]
-    directories = [e for e in elements if e not in files]
-    last_watched = None
-    if os.path.exists(LAST_WATCHED_FILENAME):
-        with open(LAST_WATCHED_FILENAME) as f:
-            last_watched = f.read()
-
-    return render_template('browse.html', path='.', files=files, parent=None, directories=directories,
-                           last_watched=last_watched)
-
 @app.route('/')
 def home():
-    return redirect(url_for('index'))
+    return redirect(url_for('browse'))
 
 @app.route('/watch/<path:video_file>')
 def watch(video_file):
-
+    fullscreen = request.args.get('fullscreen')
     file_directory, file_name = os.path.split(video_file)
     files = os.listdir(os.path.join(root_dir, file_directory))
     files = sorted(files)
@@ -59,7 +46,8 @@ def watch(video_file):
     return render_template('watch.html', filename=video_file,
                            previous_file=previous_file,
                            next_file=next_file,
-                           directory=file_directory)
+                           directory=file_directory,
+                           fullscreen=fullscreen)
 
 
 if __name__ == '__main__':
