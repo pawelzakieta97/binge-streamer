@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, render_template, redirect, url_for, request
 
 import os
@@ -47,8 +49,14 @@ def watch(video_file):
                            previous_file=previous_file,
                            next_file=next_file,
                            directory=file_directory,
-                           fullscreen=fullscreen)
+                           fullscreen=fullscreen,
+                           files=json.dumps(files),
+                           current_file_index=video_file_index)
 
+@app.route('/last_watched/<path:video_file>', methods=['POST'])
+def update_last_watched(video_file):
+    with open(LAST_WATCHED_FILENAME, 'w+') as f:
+        f.write(video_file)
 
 if __name__ == '__main__':
     app.run("0.0.0.0")

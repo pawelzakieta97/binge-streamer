@@ -24,8 +24,11 @@
 
     {% if next_file %}
     <script type='text/javascript'>
-        document.getElementById('player').addEventListener('ended',onVideoEnd,false);
-        document.getElementById('player').addEventListener('loadeddata',onVideoStart,false);
+        var files = {{ files|safe }}
+        var current_file_index = {{ current_file_index }}
+        // document.getElementById('player').addEventListener('ended',onVideoEnd,false);
+        // document.getElementById('player').addEventListener('loadeddata',onVideoStart,false);
+        document.getElementById('player').addEventListener('ended',load_next,false);
         function onVideoEnd(e) {
             // What you want to do after the event
             var is_fullscreen;
@@ -35,6 +38,10 @@
                 is_fullscreen = 'False'
             }
             window.location.replace("{{ url_for('watch', video_file=directory + '/' + next_file) }}?fullscreen=" + is_fullscreen);
+        }
+        function load_next(e) {
+            current_file_index += 1;
+            document.getElementById('player').src="{{ url_for('static', filename=directory + '/' + files[current_file_index]) }}"
         }
         function onVideoStart(e) {
             const urlParams = new URLSearchParams(window.location.search);
