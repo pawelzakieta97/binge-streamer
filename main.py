@@ -8,6 +8,7 @@ app = Flask('name', static_folder='static', template_folder='templates')
 
 root_dir = 'static'
 LAST_WATCHED_FILENAME = 'last_watched.txt'
+VIDEO_EXTENSIONS = ['.mp4', '.mkv']
 
 @app.route('/browse/')
 @app.route('/browse/<path:path>')
@@ -38,6 +39,7 @@ def watch(video_file):
     fullscreen = request.args.get('fullscreen')
     file_directory, file_name = os.path.split(video_file)
     files = os.listdir(os.path.join(root_dir, file_directory))
+    files = filter(lambda filename: any([filename.endswith(ext) for ext in VIDEO_EXTENSIONS]), files)
     files = sorted(files)
     files = [f for f in files if os.path.isfile(os.path.join(root_dir, file_directory, f))]
     video_file_index = files.index(file_name)
@@ -57,6 +59,7 @@ def watch(video_file):
 def update_last_watched(video_file):
     with open(LAST_WATCHED_FILENAME, 'w+') as f:
         f.write(video_file)
+    return video_file
 
 if __name__ == '__main__':
     app.run("0.0.0.0")

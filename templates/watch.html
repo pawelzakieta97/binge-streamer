@@ -41,7 +41,16 @@
         }
         function load_next(e) {
             current_file_index += 1;
-            document.getElementById('player').src="{{ url_for('static', filename=directory + '/' + files[current_file_index]) }}"
+            if (current_file_index > files.length){
+                return
+            }
+            document.getElementById('player').src="{{ url_for('static', filename=directory + '/') }}" + files[current_file_index]
+            fetch("{{ url_for('update_last_watched', video_file=directory) }}" + '/' + files[current_file_index], {
+              method: "POST",
+              headers: {'Content-Type': 'application/json'}
+            }).then(res => {
+              console.log("Request complete! response:", res);
+            });
         }
         function onVideoStart(e) {
             const urlParams = new URLSearchParams(window.location.search);
