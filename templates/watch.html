@@ -3,8 +3,6 @@
 
 <head>
 
-<!--    <link rel="stylesheet" href='/static/main.css' />-->
-<!--    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />-->
     <title>Title</title>
 </head>
 <body>
@@ -14,10 +12,6 @@
     </p>
     <video width="640" height="480" controls autoplay id="player">
         <source src="{{ url_for('static', filename=filename) }}" type="video/mp4">
-
-<!--        <track label="English" kind="subtitles" srclang="en" src="{{ url_for('static', filename='sub.vtt') }}" default>-->
-
-<!--        <track label="English" kind="subtitles" srclang="en" src="/static/sub.vtt" default>-->
 
         Your browser does not support the video tag
     </video>
@@ -51,14 +45,6 @@
             }).then(res => {
               console.log("Request complete! response:", res);
             });
-        }
-        function onVideoStart(e) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const is_fullscreen = urlParams.get('fullscreen');
-            // window.alert(is_fullscreen)
-            if (is_fullscreen){
-                document.getElementById('player').requestFullscreen();
-            }
         }
     </script>
     {% endif %}
