@@ -26,7 +26,7 @@ def browse(path='.'):
         with open(LAST_WATCHED_FILENAME) as f:
             last_watched = f.read()
 
-    return render_template('browse.html', path=path, files=files, parent=parent,
+    return render_template('browse2.html', path=path, files=files, parent=parent,
                            directories=directories, last_watched=last_watched)
 
 
