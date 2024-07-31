@@ -24,7 +24,7 @@ def browse(path='.'):
     last_watched = None
     if os.path.exists(LAST_WATCHED_FILENAME):
         with open(LAST_WATCHED_FILENAME) as f:
-            last_watched = f.read()
+            last_watched = f.readlines()[-1]
 
     return render_template('browse2.html', path=path, files=files, parent=parent,
                            directories=directories, last_watched=last_watched)
@@ -33,6 +33,9 @@ def browse(path='.'):
 @app.route('/')
 def home():
     return redirect(url_for('browse'))
+
+def get_intro_ts_filename(video_file):
+    return os.path.splitext(video_file)[0]+'_intro.txt'
 
 @app.route('/watch/<path:video_file>')
 def watch(video_file):
@@ -45,20 +48,35 @@ def watch(video_file):
     video_file_index = files.index(file_name)
     previous_file = files[video_file_index - 1] if video_file_index >= 1 else None
     next_file = files[video_file_index + 1] if video_file_index < len(files) - 1 else None
-    with open(LAST_WATCHED_FILENAME, 'w+') as f:
-        f.write(video_file)
+    intro_ts_filename = get_intro_ts_filename(video_file)
+    intro_ts_path = os.path.join(root_dir, intro_ts_filename)
+    if os.path.isfile(intro_ts_path):
+        with open(intro_ts_path, 'r') as f:
+            intro_start, intro_end = (float(ts.strip()) for ts in f.readlines())
+    else:
+        intro_start, intro_end = 0,0
+    with open(LAST_WATCHED_FILENAME, 'a') as f:
+        f.write('\n' + video_file)
     return render_template('watch.html', filename=video_file,
                            previous_file=previous_file,
                            next_file=next_file,
                            directory=file_directory,
-                           fullscreen=fullscreen,
+                           intro_start=intro_start,
+                           intro_end=intro_end,
                            files=json.dumps(files),
                            current_file_index=video_file_index)
 
+@app.route('/history')
+def history():
+    with open(LAST_WATCHED_FILENAME, 'r') as f:
+        watch_history = [file.strip() for file in f.readlines()]
+
+    return render_template('history.html', files=watch_history)
+
 @app.route('/last_watched/<path:video_file>', methods=['POST'])
 def update_last_watched(video_file):
-    with open(LAST_WATCHED_FILENAME, 'w+') as f:
-        f.write(video_file)
+    with open(LAST_WATCHED_FILENAME, 'a') as f:
+        f.write('\n' + video_file)
     return video_file
 
 if __name__ == '__main__':

@@ -55,14 +55,17 @@ def cache(persistent=True):
 
 @cache(persistent=True)
 def read_frames(path: str, max_frames: int = 5000, resize=(100,100)):
-    stream = cv2.VideoCapture(path)
+    stream = cv2.VideoCapture(path, apiPreference=cv2.CAP_FFMPEG)
+    fps = stream.get(cv2.CAP_PROP_FPS)
     frames = [cv2.resize(stream.read()[1].astype(float)/255, resize) for i in range(max_frames)]
-    return np.stack(frames)
+    return np.stack(frames), fps
 
 
-def get_key_frames(frames, threshold=0.2):
+def get_key_frames(frames, threshold=0.15):
     diffs = frames[1:, :, :, :] - frames[:-1, :, :, :]
     delta = np.abs(diffs).mean(axis=(1,2,3))
+    # todo: smarter way to determine keyframes (adaptive threshold)
+    delta2 = delta[1:] - delta[:-1]
     frames_indexes = np.where(delta>threshold)[0] + 1
     return frames[frames_indexes, :, :, :], frames_indexes
 
@@ -106,7 +109,7 @@ class IntroDetector:
         self.keyframes = {}
         self.result = None
 
-    def update(self, frames, name: str):
+    def update(self, frames, name: str, fps: float = 1.0):
         keyframes, frame_indexes = get_key_frames(frames)
         self.keyframes[name] = []
         for kf_index, (kf, ts) in enumerate(zip(keyframes, frame_indexes)):
@@ -114,7 +117,7 @@ class IntroDetector:
             if h not in self.frame_hashes:
                 self.frame_hashes[h] = []
             self.frame_hashes[h].append((name, kf_index))
-            self.keyframes[name].append({'ts': ts, 'kf': kf})
+            self.keyframes[name].append({'ts': ts/fps, 'kf': kf})
 
     def detect(self, threshold=0.5, morph=2):
         shot_repeats_for_intro = max(2, int(len(self.keyframes) * threshold))
@@ -147,22 +150,22 @@ class IntroDetector:
             max_intro_idx = np.argmax(intro_lengths)
             intro_start = intro_begins[max_intro_idx]
             intro_end = intro_ends[max_intro_idx]
-            intro_start_frame = int(df.ts[intro_start])
-            intro_end_frame = int(df.ts[intro_end])
+            intro_start_frame = float(df.ts[intro_start])
+            intro_end_frame = float(df.ts[intro_end])
             with open(os.path.splitext(file_path)[0]+'_intro.txt', 'w+') as f:
                 f.writelines([str(intro_start_frame)+'\n', str(intro_end_frame)])
 
 
 
 video_dir = '../static/The Office/season 4'
-paths = [os.path.join(video_dir, video_file) for video_file in os.listdir(video_dir) if video_file.endswith('.mkv')]
-frames = [read_frames(path) for path in paths]
+paths = [os.path.join(video_dir, video_file) for video_file in os.listdir(video_dir) if video_file.endswith('.mkv')]# and 'Stutter' in video_file]
+frames, fpses = zip(*[read_frames(path) for path in paths])
 
 
 detector = IntroDetector()
-for i, f in enumerate(frames):
+for i, (fr, fps) in enumerate(zip(frames, fpses)):
     print(i)
-    detector.update(f, paths[i])
+    detector.update(fr, paths[i], fps)
 
 res = detector.detect()
 detector.save(save_intros=True)

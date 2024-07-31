@@ -21,30 +21,13 @@
 <div class="container" style="width: 1200px">
     <div class="row mt-4">
         <div class="col-9">
-        <main class="container">
+                    <main class="container">
             <div class="d-flex text-body-secondary pt-3">
-                <a class="btn btn-secondary mx-3" href="{{ url_for('browse', path=parent) }}" role="button">Back</a>
-                <h3>{{ path if path!='.' else '/' }}</h3>
+                <a class="btn btn-secondary mx-3" href="{{ url_for('browse', path='.') }}" role="button">Browse</a>
+                <h3>History</h3>
 
             </div>
           <div class="my-3 p-3 bg-body rounded shadow-sm">
-
-
-
-
-            {% for dir in directories: %}
-            <div class="d-flex text-body-secondary pt-3 position-relative" >
-                            <i class="fa fa-folder fa-2x"></i>
-        <!--      <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>-->
-              <div class="pb-3 mb-0 px-3 small lh-sm border-bottom w-100">
-                <div class="d-flex justify-content-between">
-                  <strong class="text-gray-dark">{{ dir }}</strong>
-                    <a href="{{ url_for('browse', path=path + '/' + dir) }}" class="stretched-link"></a>
-                </div>
-        <!--        <span class="d-block">@username</span>-->
-              </div>
-            </div>
-            {% endfor %}
 
 
             {% for file in files: %}
@@ -54,7 +37,7 @@
               <div class="pb-3 mb-0 px-3 small lh-sm border-bottom w-100">
                 <div class="d-flex justify-content-between">
                   <strong class="text-gray-dark">{{ file }}</strong>
-                    <a href="{{ url_for('watch', video_file=path + '/' + file) }}" class="stretched-link"></a>
+                    <a href="{{ url_for('watch', video_file=file) }}" class="stretched-link"></a>
                 </div>
               </div>
             </div>
@@ -64,20 +47,15 @@
         </main>
 
         </div>
-        <div class="col-3">
-            {% if last_watched %}
-            <h2>continue watching</h2>
-            <a href="{{ url_for('watch', video_file=last_watched) }}"> {{ last_watched }} </a>
-            {% endif %}
 
-            <small class="d-block text-end mt-3">
-              <a href="{{ url_for('history') }}">History</a>
-            </small>
+        <div class="col-3">
+            <a class="btn btn-primary" href="{{ url_for('browse', path='.') }}" role="button">Clear history</a>
         </div>
+
+
+
     </div>
 
 </div>
-
 </body>
 </html>
-

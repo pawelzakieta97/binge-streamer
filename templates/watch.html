@@ -19,20 +19,19 @@
     {% if next_file %}
     <script type='text/javascript'>
         var files = {{ files|safe }}
+
+        var intro_start = {{ intro_start|safe }}
+        var intro_end = {{ intro_end|safe }}
         var current_file_index = {{ current_file_index }}
         // document.getElementById('player').addEventListener('ended',onVideoEnd,false);
         // document.getElementById('player').addEventListener('loadeddata',onVideoStart,false);
-        document.getElementById('player').addEventListener('ended',load_next,false);
-        function onVideoEnd(e) {
-            // What you want to do after the event
-            var is_fullscreen;
-            if (document.fullscreenElement != null) {
-                is_fullscreen = 'True'
-            } else {
-                is_fullscreen = 'False'
+        player = document.getElementById('player')
+        player.addEventListener('ended',load_next,false);
+        var intervalId = setInterval(function() {
+            if (player.currentTime > intro_start && player.currentTime < intro_end){
+                player.currentTime = intro_end
             }
-            window.location.replace("{{ url_for('watch', video_file=directory + '/' + next_file) }}?fullscreen=" + is_fullscreen);
-        }
+        }, 1000);
         function load_next(e) {
             current_file_index += 1;
             if (current_file_index > files.length){
