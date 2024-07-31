@@ -1,3 +1,4 @@
+import argparse
 import os.path
 import pickle
 
@@ -6,6 +7,7 @@ import plotly.express as px
 import numpy as np
 import pandas as pd
 import hashlib
+from argparse import ArgumentParser
 
 def cache(persistent=True):
     CACHE_DIR = 'cache'
@@ -156,16 +158,22 @@ class IntroDetector:
                 f.writelines([str(intro_start_frame)+'\n', str(intro_end_frame)])
 
 
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+                        prog='detector',
+                        description='detects intros in selected folder')
+    parser.add_argument('dir', default='.')  # positional argument
+    args = parser.parse_args()
+    print(args.dir)
+    video_dir = args.dir
+    paths = [os.path.join(video_dir, video_file) for video_file in os.listdir(video_dir) if video_file.endswith('.mkv')]# and 'Stutter' in video_file]
+    frames, fpses = zip(*[read_frames(path) for path in paths])
 
-video_dir = '../static/The Office/season 4'
-paths = [os.path.join(video_dir, video_file) for video_file in os.listdir(video_dir) if video_file.endswith('.mkv')]# and 'Stutter' in video_file]
-frames, fpses = zip(*[read_frames(path) for path in paths])
 
+    detector = IntroDetector()
+    for i, (fr, fps) in enumerate(zip(frames, fpses)):
+        print(i)
+        detector.update(fr, paths[i], fps)
 
-detector = IntroDetector()
-for i, (fr, fps) in enumerate(zip(frames, fpses)):
-    print(i)
-    detector.update(fr, paths[i], fps)
-
-res = detector.detect()
-detector.save(save_intros=True)
+    res = detector.detect()
+    detector.save(save_intros=True)
