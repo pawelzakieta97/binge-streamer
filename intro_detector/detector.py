@@ -57,7 +57,7 @@ def cache(persistent=True):
 
 @cache(persistent=True)
 def read_frames(path: str, max_frames: int = 5000, resize=(100,100)):
-    stream = cv2.VideoCapture(path, apiPreference=cv2.CAP_FFMPEG)
+    stream = cv2.VideoCapture(path)#, apiPreference=cv2.CAP_FFMPEG)
     fps = stream.get(cv2.CAP_PROP_FPS)
     frames = []
     while len(frames) < max_frames:
