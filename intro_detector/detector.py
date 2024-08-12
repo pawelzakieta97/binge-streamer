@@ -59,7 +59,12 @@ def cache(persistent=True):
 def read_frames(path: str, max_frames: int = 5000, resize=(100,100)):
     stream = cv2.VideoCapture(path, apiPreference=cv2.CAP_FFMPEG)
     fps = stream.get(cv2.CAP_PROP_FPS)
-    frames = [cv2.resize(stream.read()[1].astype(float)/255, resize) for i in range(max_frames)]
+    frames = []
+    while len(frames) < max_frames:
+        ret, frame = stream.read()
+        frames.append(cv2.resize(frame.astype(float)/255, resize))
+        if len(frames) % 100:
+            print(len(frames))
     return np.stack(frames), fps
 
 
