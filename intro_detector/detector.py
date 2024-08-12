@@ -63,7 +63,7 @@ def read_frames(path: str, max_frames: int = 5000, resize=(100,100)):
     while len(frames) < max_frames:
         ret, frame = stream.read()
         frames.append(cv2.resize(frame.astype(float)/255, resize))
-        if len(frames) % 100:
+        if len(frames) % 100 == 0:
             print(len(frames))
     return np.stack(frames), fps
 
