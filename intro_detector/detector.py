@@ -167,13 +167,11 @@ if __name__ == '__main__':
     print(args.dir)
     video_dir = args.dir
     paths = [os.path.join(video_dir, video_file) for video_file in os.listdir(video_dir) if video_file.endswith('.mkv')]# and 'Stutter' in video_file]
-    frames, fpses = zip(*[read_frames(path) for path in paths])
-
-
     detector = IntroDetector()
-    for i, (fr, fps) in enumerate(zip(frames, fpses)):
-        print(i)
-        detector.update(fr, paths[i], fps)
+    for path in paths:
+        print(path)
+        frames, fpses = read_frames(path)
+        detector.update(frames, path, fpses)
 
     res = detector.detect()
     detector.save(save_intros=True)
